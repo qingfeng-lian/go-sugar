@@ -58,3 +58,16 @@ func GetTimeUnix(date string, timeZone string) (int64, error) {
 	}
 	return unixTime.Unix(), nil
 }
+
+// TimeFormat 时间戳转换成日期 23时59分59秒
+func TimeFormat(t int64, format string, timeZone string) (string, error) {
+	if timeZone == "" {
+		timeZone = "Asia/Shanghai"
+	}
+	loc, err := time.LoadLocation(timeZone)
+	if err != nil {
+		return "", err
+	}
+	day := time.Unix(t, 0).In(loc).Format(format)
+	return day, nil
+}
