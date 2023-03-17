@@ -29,7 +29,7 @@ func MaxStringNum(a, b string, timeZone string) (string, error) {
 	}
 	if aT.Before(bT) {
 		// aT<bT
-		return a, nil
+		return b, nil
 	}
-	return b, nil
+	return a, nil
 }
