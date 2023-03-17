@@ -32,3 +32,9 @@ func TestTimeFormat(t *testing.T) {
 	fmt.Println(e)
 	fmt.Println(day)
 }
+
+func TestCurrTimeFormat(t *testing.T) {
+	day, e := CurrTimeFormat("20060102", "")
+	fmt.Println(e)
+	fmt.Println(day)
+}
