@@ -1,6 +1,7 @@
 package sugar
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -30,10 +31,11 @@ func GetDayLastSecond(date, timeZone string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	lastT := t + 86399
+	lastT := t + 86400
 	dayFirst := time.Unix(lastT, 0).In(loc).Format("2006-01-02 00:00:00")
+	fmt.Println(dayFirst)
 	t, err = GetTimeUnix(dayFirst, timeZone)
-	return t, nil
+	return t - 1, nil
 }
 
 // GetTimeUnix 获取时间戳， 如果没有传时区，默认是 "上海"

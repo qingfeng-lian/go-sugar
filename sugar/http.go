@@ -48,7 +48,7 @@ func HttpGet(urlStr string, requestData map[string]string, responseData interfac
 		return errors.New(fmt.Sprintf("response StatusCode is not StatusOK; code:%+v", resp.StatusCode))
 	}
 
-	fmt.Println("\n======http.Get======\n", string(respData))
+	fmt.Println("\n======http.Get======\n", req.URL, "\n", string(respData))
 
 	err = json.Unmarshal(respData, responseData)
 	if err != nil {
@@ -93,7 +93,7 @@ func HttpPostForm(urlStr string, requestData map[string]string, responseData int
 		return errors.New(fmt.Sprintf("response StatusCode is not StatusOK; code:%+v", resp.StatusCode))
 	}
 
-	fmt.Println("\n======http.Post======\n", string(respData))
+	fmt.Println("\n======http.Post======\n", formData, string(respData))
 
 	err = json.Unmarshal(respData, responseData)
 	if err != nil {
@@ -134,7 +134,7 @@ func HttpPost(urlStr string, requestData interface{}, responseData interface{}, 
 		return errors.New(fmt.Sprintf("response StatusCode is not StatusOK; code:%+v", resp.StatusCode))
 	}
 
-	fmt.Println("\n======http.Post======\n", string(respData))
+	fmt.Println("\n======http.Post======\n", string(data), string(respData))
 
 	err = json.Unmarshal(respData, responseData)
 	if err != nil {
