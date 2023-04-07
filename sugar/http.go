@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/json-iterator/go/extra"
 	"io"
 	"net/http"
 	"net/url"
@@ -141,4 +143,64 @@ func HttpPost(urlStr string, requestData interface{}, responseData interface{}, 
 		return err
 	}
 	return nil
+}
+
+func PHPPostRequest(urlStr string, requestData interface{}, responseData interface{}, headerData map[string]string) error {
+	data, _ := json.Marshal(requestData)
+	respData, err := BaseRequest(urlStr, "POST", data, headerData, map[string]string{})
+	extra.RegisterFuzzyDecoders()
+	err = jsoniter.Unmarshal(respData, responseData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PHPGetRequest(urlStr string, requestData map[string]string, responseData interface{}, headerData map[string]string) error {
+	respData, err := BaseRequest(urlStr, "GET", nil, headerData, requestData)
+	extra.RegisterFuzzyDecoders()
+	err = jsoniter.Unmarshal(respData, responseData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func BaseRequest(url string, method string, data []byte, headerData map[string]string, queryParams map[string]string) ([]byte, error) {
+	req, err := http.NewRequest(method, url, bytes.NewReader(data))
+	params := req.URL.Query()
+	for k, v := range queryParams {
+		params.Add(k, v)
+	}
+	req.URL.RawQuery = params.Encode()
+	if err != nil {
+		fmt.Printf("%s", err.Error())
+		return []byte{}, err
+	}
+	if len(headerData) > 0 {
+		for k, v := range headerData {
+			req.Header.Set(k, v)
+		}
+	}
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("%s", err.Error())
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	respData, err := io.ReadAll(resp.Body)
+
+	fmt.Println("\n======http."+method+"======\n", url, string(data), string(respData))
+
+	if err != nil {
+		fmt.Printf("%s", err.Error())
+		return []byte{}, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return []byte{}, errors.New(fmt.Sprintf("response StatusCode is not StatusOK; code:%+v", resp.StatusCode))
+	}
+	return respData, nil
 }
